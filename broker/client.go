@@ -33,8 +33,9 @@ type Client struct {
 
 func NewClient(conn net.Conn, info message.Connect, ctx context.Context, b *Broker) *Client {
 	cctx, terminate := context.WithCancel(ctx)
+	u, _ := uuid.NewV4()
 	client := &Client{
-		id:        uuid.NewV4().String(),
+		id:        u.String(),
 		conn:      conn,
 		Publisher: make(chan *message.Publish),
 		info:      info,
