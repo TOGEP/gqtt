@@ -16,10 +16,7 @@ import (
 
 func makeConnectionMessage(opts []ClientOption) *message.Connect {
 	connect := message.NewConnect()
-	uuid, err := uuid.NewV4()
-	if err != nil {
-		log.Debug("Unable to generate UUID: ", err)
-	}
+	uuid := uuid.NewV4()
 	connect.ClientId = uuid.String()
 
 	var exists bool
