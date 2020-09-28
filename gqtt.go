@@ -36,3 +36,7 @@ func WithRetain() Option {
 func WithQoS(qos message.QoSLevel) Option {
 	return client.WithQoS(qos)
 }
+
+func WithUserProperty(prop map[string]string) Option {
+	return client.WithUserProperty(prop)
+}

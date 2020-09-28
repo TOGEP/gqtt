@@ -7,11 +7,12 @@ import (
 type optionName string
 
 const (
-	nameBasicAuth optionName = "basic"
-	nameLoginAuth optionName = "login"
-	nameWill      optionName = "will"
-	nameRetain    optionName = "retain"
-	nameQoS       optionName = "qos"
+	nameBasicAuth    optionName = "basic"
+	nameLoginAuth    optionName = "login"
+	nameWill         optionName = "will"
+	nameRetain       optionName = "retain"
+	nameQoS          optionName = "qos"
+	nameUserProperty optionName = "UserProperty"
 )
 
 type ClientOption struct {
@@ -63,5 +64,12 @@ func WithQoS(qos message.QoSLevel) ClientOption {
 	return ClientOption{
 		name:  nameQoS,
 		value: qos,
+	}
+}
+
+func WithUserProperty(prop map[string]string) ClientOption {
+	return ClientOption{
+		name:  nameUserProperty,
+		value: prop,
 	}
 }

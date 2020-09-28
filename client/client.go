@@ -220,6 +220,17 @@ func (c *Client) Publish(topic string, body []byte, opts ...ClientOption) error 
 			pb.SetRetain(true)
 		case nameQoS:
 			pb.SetQoS(o.value.(message.QoSLevel))
+		case nameUserProperty:
+			userproperty := map[string]string{}
+			switch c := o.value.(type) {
+			case map[string]string:
+				userproperty = c
+				pb.Property = &message.PublishProperty{
+					UserProperty: userproperty,
+				}
+			default:
+				log.Debug("Other Property")
+			}
 		}
 	}
 	pb.TopicName = topic
