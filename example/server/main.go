@@ -8,10 +8,10 @@ import (
 )
 
 func main() {
-	server := gqtt.NewBroker(":9999")
+	server := gqtt.NewBroker(":1883")
 	ctx := context.Background()
 	go server.ListenAndServe(ctx)
-	for evt := range server.MessageEvent {
+	for evt := range server.MessageEvent.Out {
 		switch e := evt.(type) {
 		case *message.Subscribe:
 			log.Println("Received SUBSCRIBE event: ", e.GetType())
@@ -19,6 +19,7 @@ func main() {
 			log.Println("Received CONNECT event", e.GetType())
 		case *message.Publish:
 			log.Println("Received PUBLISH event", e.GetType())
+			log.Println("body", string(e.Body))
 		}
 	}
 	<-ctx.Done()

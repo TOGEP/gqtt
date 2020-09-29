@@ -27,7 +27,7 @@ type Broker struct {
 	addr         string
 	subscription *Subscription
 	willPacketId uint16
-	MessageEvent chan interface{}
+	MessageEvent *PriorityChannel
 
 	mu sync.Mutex
 }
@@ -36,7 +36,7 @@ func NewBroker(addr string) *Broker {
 	return &Broker{
 		addr:         addr,
 		subscription: NewSubscription(),
-		MessageEvent: make(chan interface{}, capEventSize),
+		MessageEvent: NewPriorityChannel(),
 	}
 }
 
@@ -69,10 +69,29 @@ func (b *Broker) ListenAndServe(ctx context.Context) error {
 
 func (b *Broker) sendEvent(msg interface{}) {
 	// Check overflow channel buffer
-	if len(b.MessageEvent) >= capEventSize {
-		log.Debug("Event channle overflow. You have to drain message")
-	} else {
-		b.MessageEvent <- msg
+	//if len(b.MessageEvent) >= capEventSize {
+	//log.Debug("Event channle overflow. You have to drain message")
+	//} else {
+	switch m := msg.(type) {
+	case *message.Publish:
+		if m.Property == nil {
+			log.Debug("nothing property")
+			b.MessageEvent.Normal <- msg
+			return
+		}
+		switch m.Property.UserProperty["priority"] {
+		case "urgent":
+			b.MessageEvent.Urgent <- msg
+		case "critical":
+			b.MessageEvent.Critical <- msg
+		case "normal":
+			b.MessageEvent.Normal <- msg
+		default:
+			log.Debug("other userproperty")
+			b.MessageEvent.Normal <- msg
+		}
+		//	}
+		//b.MessageEvent <- msg
 	}
 }
 
