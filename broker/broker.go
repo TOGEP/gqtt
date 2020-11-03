@@ -52,6 +52,29 @@ func (b *Broker) ListenAndServe(ctx context.Context) error {
 	defer listener.Close()
 	log.Debugf("Broker server started at %s", b.addr)
 
+	go func() {
+		for {
+			select {
+			case pb := <-b.PriorityQueue.Out:
+				if pb == nil {
+					log.Debug("nothing queue data")
+					return
+				}
+				//time.Sleep(time.Second) //DEBUG
+				switch e := pb.(type) {
+				case *message.PriorityPublishMessage:
+					//TODO support priority publish QoS1&2
+					log.Debugf("send priority message: %s\n", e.Message)
+					if err := message.WriteFrame(*e.Conn, e.Message); err != nil {
+						log.Debug("failed to send publish message: ", e)
+					}
+				default:
+					log.Debug("type error")
+				}
+			}
+		}
+	}()
+
 	for {
 		s, err := listener.Accept()
 		if err != nil {

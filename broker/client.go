@@ -54,19 +54,6 @@ func NewClient(conn net.Conn, info message.Connect, ctx context.Context, b *Brok
 		client.terminate()
 	})
 
-	go func() {
-		for {
-			select {
-			case pb := <-client.Publisher:
-				if pb == nil {
-					return
-				}
-				if err := client.publish(pb); err != nil {
-					client.Close(true)
-				}
-			}
-		}
-	}()
 	go client.loop()
 
 	return client
