@@ -22,7 +22,7 @@ func formatTopicPath(path string) string {
 	return "/" + strings.Trim(path, "/")
 }
 
-var clients = make(map[string]chan *message.Publish)
+var clients = make(map[string]*net.Conn)
 
 type Broker struct {
 	addr          string
@@ -161,14 +161,13 @@ func (b *Broker) handleConnection(client *Client) {
 func (b *Broker) addClient(client *Client) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	clients[client.Id()] = client.Publisher
+	clients[client.Id()] = client.Conn()
 }
 
 func (b *Broker) removeClient(clientId string) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	if c, ok := clients[clientId]; ok {
-		close(c)
+	if _, ok := clients[clientId]; ok {
 		delete(clients, clientId)
 		b.subscription.UnsubscribeAll(clientId)
 	}

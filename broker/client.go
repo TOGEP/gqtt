@@ -72,6 +72,10 @@ func NewClient(conn net.Conn, info message.Connect, ctx context.Context, b *Brok
 	return client
 }
 
+func (c *Client) Conn() *net.Conn {
+	return &c.conn
+}
+
 func (c *Client) publish(pb *message.Publish) error {
 	log.Debugf("broker publish to client: qos: %d, message: %s\n", pb.QoS, string(pb.Body))
 	switch pb.QoS {
