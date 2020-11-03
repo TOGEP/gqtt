@@ -118,6 +118,19 @@ func ReceiveFrame(r io.Reader) (*Frame, []byte, error) {
 	return f, payload, nil
 }
 
+type PriorityPublishMessage struct {
+	Message Encoder
+	Conn    *net.Conn
+}
+
+func AddPriorityPublishMessage(w *net.Conn, m Encoder, q *priority_channel.PriorityChannel, priority string) {
+	data := &PriorityPublishMessage{
+		Message: m,
+		Conn:    w,
+	}
+	q.Enqueue(priority, data)
+}
+
 func WriteFrame(w io.Writer, m Encoder) error {
 	buf, err := m.Encode()
 	if err != nil {

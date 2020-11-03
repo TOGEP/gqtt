@@ -32,6 +32,23 @@ func (pc *PriorityChannel) Close() {
 	close(pc.Out)
 }
 
+func (pc *PriorityChannel) Enqueue(priority string, data interface{}) {
+	switch priority {
+	case "normal":
+		log.Debug("add normal queue")
+		pc.Normal <- data
+	case "critical":
+		log.Debug("add critical queue")
+		pc.Critical <- data
+	case "urgent":
+		log.Debug("add urgent queue")
+		pc.Urgent <- data
+	default:
+		log.Debug("add normal queue (another priority)")
+		pc.Normal <- data
+	}
+}
+
 func (pc *PriorityChannel) start() {
 	go func() {
 		for {

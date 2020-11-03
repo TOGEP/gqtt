@@ -204,10 +204,13 @@ func (b *Broker) Publish(pb *message.Publish) {
 		// Downgrade QoS if we need
 		if pb.QoS > qos {
 			log.Debugf("send publish message to: %s (downgraded %d -> %d)\n", cid, pb.QoS, qos)
-			c <- pb.Downgrade(qos)
+			downpb := pb.Downgrade(qos)
+			priority := pb.Property.UserProperty["priority"]
+			message.AddPriorityPublishMessage(c, downpb, b.PriorityQueue, priority)
 		} else {
 			log.Debugf("send publish message to: %s with qos: %d", cid, pb.QoS)
-			c <- pb
+			priority := pb.Property.UserProperty["priority"]
+			message.AddPriorityPublishMessage(c, pb, b.PriorityQueue, priority)
 		}
 	}
 }
