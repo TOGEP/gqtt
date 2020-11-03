@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/TOGEP/gqtt/priority_channel"
 	"github.com/pkg/errors"
 	"github.com/ysugimoto/gqtt/internal/log"
 	"github.com/ysugimoto/gqtt/message"

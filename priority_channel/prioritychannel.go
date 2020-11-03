@@ -1,4 +1,8 @@
-package broker
+package priority_channel
+
+import (
+	"github.com/TOGEP/gqtt/internal/log"
+)
 
 type PriorityChannel struct {
 	Out      chan interface{}
@@ -34,6 +38,7 @@ func (pc *PriorityChannel) start() {
 			select {
 			case s := <-pc.Urgent:
 				pc.Out <- s
+				log.Debug("out<-urgent")
 				continue
 			case <-pc.stopCh:
 				return
@@ -43,9 +48,11 @@ func (pc *PriorityChannel) start() {
 			select {
 			case s := <-pc.Urgent:
 				pc.Out <- s
+				log.Debug("out<-urgent")
 				continue
 			case s := <-pc.Critical:
 				pc.Out <- s
+				log.Debug("out<-critical")
 				continue
 			case <-pc.stopCh:
 				return
@@ -55,10 +62,13 @@ func (pc *PriorityChannel) start() {
 			select {
 			case s := <-pc.Urgent:
 				pc.Out <- s
+				log.Debug("out<-urgent")
 			case s := <-pc.Critical:
 				pc.Out <- s
+				log.Debug("out<-critical")
 			case s := <-pc.Normal:
 				pc.Out <- s
+				log.Debug("out<-normal")
 			case <-pc.stopCh:
 				return
 			}

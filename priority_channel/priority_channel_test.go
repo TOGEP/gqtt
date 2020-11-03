@@ -1,4 +1,4 @@
-package broker_test
+package priority_channel_test
 
 import (
 	"fmt"
@@ -12,8 +12,9 @@ func TestPriorityChannel(t *testing.T) {
 	pc.Critical <- 2
 	pc.Urgent <- 3
 
-	a <- msg.out
+	a := <-pc.Out
+
 	if a != 3 {
-		t.Fatal("hoge")
+		t.Fatal("hogeeeee")
 	}
 }
