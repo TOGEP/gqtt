@@ -181,6 +181,7 @@ func (c *Client) loop() {
 				log.Debugf("failed to parse packet to PUBLISH: %s\n", err.Error())
 				return
 			}
+
 			log.Debugf("Publish message received with QoS: %d from: %s, body: %s\n", pb.QoS, c.Id(), string(pb.Body))
 
 			// Check retain message deletion
@@ -194,6 +195,7 @@ func (c *Client) loop() {
 			case message.QoS0:
 				// QoS0 publishes message immediately
 				c.broker.Publish(pb)
+
 			case message.QoS1:
 				// QoS1 publishes message and respond PUBACK
 				if err := message.WriteFrame(c.conn, message.NewPubAck(pb.PacketId)); err != nil {

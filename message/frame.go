@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"net"
 	"time"
 
 	"github.com/TOGEP/gqtt/priority_channel"
