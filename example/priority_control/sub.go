@@ -8,7 +8,9 @@ import (
 )
 
 func main() {
-	client := gqtt.NewClient("mqtt://192.168.1.14:1883")
+	//debug
+	log.SetFlags(log.Lmicroseconds)
+	client := gqtt.NewClient("mqtt://localhost:1883")
 	defer client.Disconnect()
 
 	ctx := context.Background()

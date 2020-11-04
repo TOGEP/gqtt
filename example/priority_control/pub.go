@@ -13,16 +13,17 @@ import (
 func main() {
 	var wg sync.WaitGroup
 	for i := 0; i < 30; i++ {
-		wg.Add(3)
-		go connect(&wg, 1)
-		go connect(&wg, 10)
-		go connect(&wg, 20)
+		wg.Add(1)
+		go connect(&wg, i)
 	}
 	wg.Wait()
 }
 
 func connect(wg *sync.WaitGroup, count int) {
 	defer wg.Done()
+	//debug
+	log.SetFlags(log.Lmicroseconds)
+
 	var sig string = strconv.Itoa(count)
 
 	client := gqtt.NewClient("mqtt://localhost:1883")
@@ -47,7 +48,7 @@ func connect(wg *sync.WaitGroup, count int) {
 			log.Println("context canceled")
 			return
 		case <-ticker.C:
-			log.Printf("message publish")
+			log.Printf("device %v : message publish", sig)
 			ticker.Stop()
 			i, _ := strconv.Atoi(sig)
 			switch {
@@ -56,11 +57,11 @@ func connect(wg *sync.WaitGroup, count int) {
 					return
 				}
 			case i >= 10 && i <= 19:
-				if err := client.Publish("mqtt/test", []byte("critical packet from device"+sig), gqtt.WithQoS(message.QoS1), gqtt.WithUserProperty(map[string]string{"priority": "critical"})); err != nil {
+				if err := client.Publish("mqtt/test", []byte("critical packet from device"+sig), gqtt.WithQoS(message.QoS0), gqtt.WithUserProperty(map[string]string{"priority": "critical"})); err != nil {
 					return
 				}
 			case i >= 20 && i <= 29:
-				if err := client.Publish("mqtt/test", []byte("normal packet from device"+sig), gqtt.WithQoS(message.QoS2), gqtt.WithUserProperty(map[string]string{"priority": "normal"})); err != nil {
+				if err := client.Publish("mqtt/test", []byte("normal packet from device"+sig), gqtt.WithQoS(message.QoS0), gqtt.WithUserProperty(map[string]string{"priority": "normal"})); err != nil {
 					return
 				}
 			default:
