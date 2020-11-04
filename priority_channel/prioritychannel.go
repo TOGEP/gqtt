@@ -15,9 +15,9 @@ type PriorityChannel struct {
 func NewPriorityChannel() *PriorityChannel {
 	pc := PriorityChannel{}
 	pc.Out = make(chan interface{})
-	pc.Urgent = make(chan interface{}, 1)
-	pc.Critical = make(chan interface{}, 1)
-	pc.Normal = make(chan interface{}, 1)
+	pc.Urgent = make(chan interface{}, 100)
+	pc.Critical = make(chan interface{}, 100)
+	pc.Normal = make(chan interface{}, 100)
 	pc.stopCh = make(chan struct{})
 
 	pc.start()
